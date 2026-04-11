@@ -33,10 +33,10 @@ langchain4j:
         api-key: <your-key>
 bigmodel:
 <<<<<<< HEAD
-  api-key: 70e52131c6e0403dbb7f6a4af1118435.UxE1XzjmIswIsvDq
+  api-key: <your-key>
 =======
   api-key: <your-key>
->>>>>>> 270fc850338f2f968df4699f88bb4a95c3699c32
+>>>>>>> 
 
 chroma:
   url: http://localhost:8000
