@@ -23,41 +23,43 @@ public class AiController {
 
     @Resource
     private AiCodeHelperService aiCodeHelperService;
-
     @Resource
     private CompanionAgentService companionAgentService;
-
     @Resource
     private ProactiveCareService proactiveCareService;
-
     @Resource
     private MoodOverviewService moodOverviewService;
-
     @Resource
     private ChatSessionRepository chatSessionRepository;
 
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chat(int memoryId, String message) {
         return aiCodeHelperService.chatStream(memoryId, message)
-                .map(chunk -> ServerSentEvent.<String>builder()
-                        .data(chunk)
-                        .build());
+                .map(chunk -> ServerSentEvent.<String>builder().data(chunk).build());
     }
 
     @PostMapping("/companion/chat")
     public ResponseEntity<Map<String, Object>> companionChat(@RequestBody ChatRequest request) {
         String username = request.username() != null ? request.username() : "KINLIK";
-        CompanionAgentService.CompanionResponse response =
-                companionAgentService.chat(username, request.message());
-
+        CompanionAgentService.CompanionResponse response = companionAgentService.chat(username, request.message());
         return ResponseEntity.ok(Map.of(
                 "message", response.message(),
                 "careAdvice", response.careAdvice() == null ? "" : response.careAdvice(),
+                "weather", Map.of(
+                        "city", response.weather().city(),
+                        "description", response.weather().description(),
+                        "temperature", response.weather().temperature(),
+                        "humidity", response.weather().humidity(),
+                        "suggestion", response.weather().suggestion()
+                ),
                 "emotion", Map.of(
                         "type", response.emotion().emotion(),
                         "intensity", response.emotion().intensity(),
                         "sentiment", response.emotion().sentiment(),
-                        "needsSupport", response.emotion().needsSupport()
+                        "needsSupport", response.emotion().needsSupport(),
+                        "vector", response.emotion().vector(),
+                        "positive", response.emotion().positive(),
+                        "highRisk", response.emotion().highRisk()
                 )
         ));
     }
@@ -65,14 +67,15 @@ public class AiController {
     @PostMapping("/companion/mood")
     public ResponseEntity<Map<String, Object>> recordMood(@RequestBody MoodRequest request) {
         String username = request.username() != null ? request.username() : "KINLIK";
-        var record = companionAgentService.recordDailyMood(
-                username,
-                new CompanionAgentService.MoodInput(request.moodDescription(), request.triggerEvent())
-        );
+        var record = companionAgentService.recordDailyMood(username, new CompanionAgentService.MoodInput(request.moodDescription(), request.triggerEvent()));
         return ResponseEntity.ok(Map.of(
                 "message", "情绪记录成功",
                 "recordDate", record.getRecordDate(),
                 "emotionType", record.getEmotionType(),
+                "emotionIntensity", record.getEmotionIntensity(),
+                "emotionVector", record.getEmotionVector(),
+                "positiveEmotion", record.getPositiveEmotion(),
+                "highRisk", record.getHighRisk(),
                 "aiSuggestion", record.getAiSuggestion()
         ));
     }
@@ -80,37 +83,27 @@ public class AiController {
     @GetMapping("/companion/check-in")
     public ResponseEntity<Map<String, Object>> getNightlyCheckIn(@RequestParam(required = false) String username) {
         String actualUsername = username != null ? username : "KINLIK";
-        String checkInMessage = companionAgentService.buildNightlyCheckInMessage(actualUsername);
         return ResponseEntity.ok(Map.of(
                 "username", actualUsername,
-                "checkInMessage", checkInMessage
+                "checkInMessage", companionAgentService.buildNightlyCheckInMessage(actualUsername)
         ));
     }
 
     @GetMapping("/companion/care")
-    public ResponseEntity<String> getProactiveCare(@RequestParam String username,
-                                                   @RequestParam String context) {
-        String suggestion = proactiveCareService.generateProactiveSuggestion(username, context);
-        return ResponseEntity.ok(suggestion);
+    public ResponseEntity<String> getProactiveCare(@RequestParam String username, @RequestParam String context) {
+        return ResponseEntity.ok(proactiveCareService.generateProactiveSuggestion(username, context));
     }
 
     @GetMapping("/companion/mood/overview")
-    public ResponseEntity<Map<String, Object>> moodOverview(@RequestParam(required = false) String username,
-                                                            @RequestParam(defaultValue = "7") int days) {
+    public ResponseEntity<Map<String, Object>> moodOverview(@RequestParam(required = false) String username, @RequestParam(defaultValue = "7") int days) {
         String actualUsername = username != null ? username : "KINLIK";
         MoodOverviewService.MoodOverview overview = moodOverviewService.getOverview(actualUsername, days);
-        return ResponseEntity.ok(Map.of(
-                "username", actualUsername,
-                "days", days,
-                "summary", overview.summary(),
-                "records", overview.records()
-        ));
+        return ResponseEntity.ok(Map.of("username", actualUsername, "days", days, "summary", overview.summary(), "records", overview.records()));
     }
 
     @PostMapping("/session/save")
     public ResponseEntity<Map<String, Object>> saveSession(@RequestBody SessionRequest request) {
         String username = request.username() != null ? request.username() : "KINLIK";
-
         ChatSession session = chatSessionRepository.findBySessionId(request.sessionId());
         if (session == null) {
             session = new ChatSession();
@@ -118,24 +111,35 @@ public class AiController {
             session.setUsername(username);
             session.setCreatedAt(LocalDateTime.now());
         }
-
         session.setTitle(request.title());
         session.setLastMessage(request.lastMessage());
+        session.setMessagesJson(request.messagesJson());
+        session.setPinned(request.pinned() != null ? request.pinned() : Boolean.FALSE);
         session.setUpdatedAt(LocalDateTime.now());
-
         chatSessionRepository.save(session);
-
-        return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "会话保存成功"
-        ));
+        return ResponseEntity.ok(Map.of("success", true, "message", "会话保存成功"));
     }
 
     @GetMapping("/session/list")
     public ResponseEntity<List<ChatSession>> getSessionList(@RequestParam(required = false) String username) {
         String actualUsername = username != null ? username : "KINLIK";
-        List<ChatSession> sessions = chatSessionRepository.findByUsernameOrderByUpdatedAtDesc(actualUsername);
-        return ResponseEntity.ok(sessions);
+        return ResponseEntity.ok(chatSessionRepository.findByUsernameOrderByUpdatedAtDesc(actualUsername));
+    }
+
+    @GetMapping("/session/detail/{sessionId}")
+    public ResponseEntity<Map<String, Object>> getSessionDetail(@PathVariable String sessionId) {
+        ChatSession session = chatSessionRepository.findBySessionId(sessionId);
+        if (session == null) return ResponseEntity.ok(Map.of("success", false, "message", "会话不存在"));
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "sessionId", session.getSessionId(),
+                "username", session.getUsername(),
+                "title", session.getTitle(),
+                "lastMessage", session.getLastMessage(),
+                "messagesJson", session.getMessagesJson() == null ? "[]" : session.getMessagesJson(),
+                "pinned", session.getPinned() == null ? false : session.getPinned(),
+                "updatedAt", session.getUpdatedAt()
+        ));
     }
 
     @GetMapping("/session/delete/{sessionId}")
@@ -148,12 +152,7 @@ public class AiController {
         return ResponseEntity.ok(Map.of("success", false, "message", "会话不存在"));
     }
 
-    public record ChatRequest(String username, String message) {
-    }
-
-    public record MoodRequest(String username, String moodDescription, String triggerEvent) {
-    }
-
-    public record SessionRequest(String username, String sessionId, String title, String lastMessage) {
-    }
+    public record ChatRequest(String username, String message) {}
+    public record MoodRequest(String username, String moodDescription, String triggerEvent) {}
+    public record SessionRequest(String username, String sessionId, String title, String lastMessage, String messagesJson, Boolean pinned) {}
 }

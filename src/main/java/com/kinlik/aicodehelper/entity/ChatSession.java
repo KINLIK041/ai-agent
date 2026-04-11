@@ -1,5 +1,6 @@
 package com.kinlik.aicodehelper.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -22,6 +23,12 @@ public class ChatSession {
     @Column(length = 5000)
     private String lastMessage;
 
+    @JsonIgnore
+    @Column(columnDefinition = "LONGTEXT")
+    private String messagesJson;
+
+    private Boolean pinned = false;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -30,6 +37,9 @@ public class ChatSession {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
+        if (pinned == null) {
+            pinned = false;
+        }
     }
 
     @PreUpdate

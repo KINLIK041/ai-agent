@@ -31,6 +31,13 @@ public class MoodRecord {
     @Column(length = 3000)
     private String aiSuggestion;
 
+    @Column(length = 500)
+    private String emotionVector;
+
+    private Boolean positiveEmotion;
+
+    private Boolean highRisk;
+
     private LocalDateTime createdAt;
 
     @PrePersist
