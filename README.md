@@ -7,56 +7,43 @@
 ![Vue](https://img.shields.io/badge/Vue-3.x-blue?style=flat-square&logo=vue.js)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
-## ✨ 特性
+## 📸 产品展示
 
-- 🧠 **情感分析** - 实时识别和理解用户情绪状态
-- 💭 **动态记忆** - 基于向量数据库的长期记忆管理
-- 💝 **主动关怀** - 根据情绪历史主动提供心理支持
-- 🌐 **智能对话** - 集成阿里云通义千问大模型
-- 🔧 **工具扩展** - 支持天气查询、面试问题生成等插件
-- 🛡️ **安全防护** - 输入内容安全过滤机制
+### 💬 智能对话界面
 
-## 🏗️ 技术架构
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 300px;">
+    <p align="center"><strong>浅色模式</strong></p>
+    <img src="./images/chat-screenshot(1).png" alt="浅色模式" width="100%">
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <p align="center"><strong>深色模式</strong></p>
+    <img src="./images/chat-screenshot(2).png" alt="深色模式" width="100%">
+  </div>
+</div>
 
-### 后端技术栈
-| 技术 | 版本 | 说明 |
-|------|------|------|
-| Spring Boot | 4.x | 核心框架 |
-| Java | 21 | 开发语言 |
-| Spring AI | Latest | AI 应用框架 |
-| ChromaDB | Latest | 向量数据库 |
-| MySQL | 8.0+ | 关系型数据库 |
-| Alibaba DashScope | Latest | 通义千问 API |
+### 📊 情绪分析面板
 
-### 前端技术栈
-- **Vue 3** - 渐进式 JavaScript 框架
-- **Vite** - 下一代前端构建工具
+<img src="./images/mood-analysis (1).png" alt="情绪分析" width="100%">
 
-### 核心技术
-- **MCP** (Model Context Protocol) - 模型上下文协议
-- **RAG** (Retrieval-Augmented Generation) - 检索增强生成
-- **Guardrail** - 输入输出安全护栏
+### 🧠 记忆管理系统
 
-## 🚀 快速开始
+<div style="display: flex; gap: 10px; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 300px;">
+    <img src="./images/memory-management.png" alt="记忆管理概览" width="100%">
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <img src="./images/memory-management(2).png" alt="记忆管理详情" width="100%">
+  </div>
+</div>
 
-### 前置要求
+### 📱 移动端适配
 
-- ☕ JDK 21 或更高版本
-- 📦 Maven 3.6+
-- 🐳 Docker & Docker Compose
-- 🟢 Node.js 18+ (前端开发)
+> 移动端界面正在优化中，目前已支持基础的响应式布局。
+>
+> （待补充移动端截图）
 
-### 安装步骤
-
-#### 1️⃣ 克隆项目
-# 🤖 AI Agent - 情感感知智能助手
-
-> 一个具备情感识别、动态记忆和主动关怀能力的 AI Agent 系统
-
-![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-brightgreen?style=flat-square&logo=spring-boot)
-![Vue](https://img.shields.io/badge/Vue-3.x-blue?style=flat-square&logo=vue.js)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+![移动端](./images/mobile-view.png)
 
 ## ✨ 特性
 

@@ -32,7 +32,7 @@ langchain4j:
         model-name: qwen-max
         api-key: sk-ef43591c3ec4405e814224a065b09f35
 bigmodel:
-  api-key: b99527621d4143469a8df4d11a418ce3.oPkVJ620YdDDT2Hu
+  api-key: 70e52131c6e0403dbb7f6a4af1118435.UxE1XzjmIswIsvDq
 
 chroma:
   url: http://localhost:8000
