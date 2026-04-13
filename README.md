@@ -101,11 +101,15 @@ docker-compose up -d
 
 编辑 `src/main/resources/application.yml`:
 ```bash
-<sub><br>yaml <br>
-spring:<br> ai:<br> dashscope:<br> api-key: your-api-key-here # 替换为你的阿里云 API Key<br>
-datasource:<br> 
-url: jdbc:mysql://localhost:3306/companion_db<br> username: your-username<br> password: your-password
-</sub>
+yaml
+ spring:
+  ai:
+   dashscope:
+    api-key: your-api-key-here # 替换为你的阿里云 API Key
+datasource:
+url: jdbc:mysql://localhost:3306/companion_db
+ username: your-username
+ password: your-password
 ```
 
 #### 4️⃣ 启动后端服务
@@ -201,13 +205,14 @@ ai-agent/<br>
 
 示例:
 ```bash
-<sub>
-java<br> @Component <br>
-public class CustomTool {<br>
+java
+@Component
+public class CustomTool {
 @Tool(description = "工具描述")
-<br>public String execute(String input) {
-<br>// 实现逻辑<br>
-return result;<br> }<br> }
+public String execute(String input) {
+// 实现逻辑
+return result;
+} }
 ```
 ### 自定义提示词
 
