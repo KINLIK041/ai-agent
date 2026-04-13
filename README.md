@@ -92,7 +92,9 @@ git clone https://github.com/KINLIK041/ai-agent.git
 cd ai-agent
 ```
 #### 2️⃣ 启动依赖服务
-docker-compose up -d<br>
+```bash
+docker-compose up -d
+```
 这将启动 ChromaDB 向量数据库。
 
 #### 3️⃣ 配置环境变量
@@ -105,12 +107,17 @@ url: jdbc:mysql://localhost:3306/companion_db<br> username: your-username<br> pa
 </sub>
 
 #### 4️⃣ 启动后端服务
+```bash
 mvn spring-boot:run
-<br>后端服务将在 `http://localhost:8080` 启动。
+```
+后端服务将在 `http://localhost:8080` 启动。
 
 #### 5️⃣ 启动前端应用
-cd ai-code-helper-frontend<br> npm install<br> npm run dev
-<br>前端应用将在 `http://localhost:5173` 启动。
+```bash
+cd ai-code-helper-frontend
+npm install<br> npm run dev
+```
+前端应用将在 `http://localhost:5173` 启动。
 
 ## 📁 项目结构
 <sub>
