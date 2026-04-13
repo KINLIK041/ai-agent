@@ -29,11 +29,11 @@
 ### 🧠 记忆管理系统
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <div style="flex: 1; min-width: 100px;">
-    <img src="./images/memory-management.png" alt="记忆管理概览" width="100%">
+  <div style="flex: 1; min-width: 600px;">
+    <img src="./images/memory-management.png" alt="记忆管理概览" width="60%">
   </div>
-  <div style="flex: 1; min-width: 100px;">
-    <img src="./images/memory-management(2).png" alt="记忆管理详情" width="100%">
+  <div style="flex: 1; min-width: 600px;">
+    <img src="./images/memory-management(2).png" alt="记忆管理详情" width="60%">
   </div>
 </div>
 
@@ -87,10 +87,10 @@
 ### 安装步骤
 
 #### 1️⃣ 克隆项目
-"""bash
-git clone https://github.com/KINLIK041/ai-agent.git 
+```bash
+git clone https://github.com/KINLIK041/ai-agent.git
 cd ai-agent
-"""
+```
 #### 2️⃣ 启动依赖服务
 docker-compose up -d<br>
 这将启动 ChromaDB 向量数据库。
