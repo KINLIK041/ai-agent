@@ -122,7 +122,8 @@ mvn spring-boot:run
 #### 5️⃣ 启动前端应用
 ```bash
 cd ai-code-helper-frontend
-npm install<br> npm run dev
+npm install
+npm run dev
 ```
 前端应用将在 `http://localhost:5173` 启动。
 
