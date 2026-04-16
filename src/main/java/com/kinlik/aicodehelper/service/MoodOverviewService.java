@@ -32,10 +32,13 @@ public class MoodOverviewService {
                         record.getEmotionIntensity(),
                         record.getEmotionDescription(),
                         record.getTriggerEvent(),
-                        record.getAiSuggestion()
+                        record.getAiSuggestion(),
+                        record.getPositiveEmotion(),
+                        record.getHighRisk()
                 ))
                 .toList();
         return new MoodOverview(summary, views);
+
     }
 
     private String buildSummary(List<MoodRecord> records, int days) {
@@ -71,6 +74,8 @@ public class MoodOverviewService {
                                  Integer emotionIntensity,
                                  String emotionDescription,
                                  String triggerEvent,
-                                 String aiSuggestion) {
+                                 String aiSuggestion,
+                                 Boolean positiveEmotion,
+                                 Boolean highRisk) {
     }
 }

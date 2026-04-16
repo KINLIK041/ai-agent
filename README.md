@@ -9,6 +9,9 @@
 
 ## 📸 产品展示
 
+
+
+![项目演示](images/output.gif)
 ### 💬 智能对话界面
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap;">

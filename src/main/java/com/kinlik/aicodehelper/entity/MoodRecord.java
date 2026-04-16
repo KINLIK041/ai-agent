@@ -44,4 +44,5 @@ public class MoodRecord {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
 }

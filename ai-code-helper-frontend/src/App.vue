@@ -34,8 +34,24 @@ function store(k,v){localStorage.setItem(k,JSON.stringify(v))} function read(k){
 function persistMessages(){const c=read(CACHE);c[sessionId.value]=messages.value;store(CACHE,c)} function hydrateLocal(){const c=read(CACHE);return c[sessionId.value]||null}
 function cut(t,n){return !t?'':(t.length>n?`${t.slice(0,n)}…`:t)} function renderMarkdown(t){return marked.parse((t||'').replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi,'').replace(/javascript:/gi,''),{renderer})}
 function flash(text,type='info'){notice.value={text,type};clearTimeout(flash.t);flash.t=setTimeout(()=>notice.value=null,3000)} function bucket(d){if(!d)return'earlier';d=new Date(d);const n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate()),y=new Date(t),w=new Date(t);y.setDate(t.getDate()-1);w.setDate(t.getDate()-7);return d>=t?'today':d>=y?'yesterday':d>=w?'week':'earlier'}
-function formatTime(t){return new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(t)} function formatSessionTime(d){if(!d)return'刚刚';d=new Date(d);const x=Date.now()-d.getTime();if(x<60000)return'刚刚';if(x<3600000)return`${Math.floor(x/60000)} 分钟前`;if(x<86400000)return`${Math.floor(x/3600000)} 小时前`;return new Intl.DateTimeFormat('zh-CN',{month:'short',day:'numeric'}).format(d)}
-function level(row){if(!row)return'none';if(row.highRisk)return'negative';if(row.positiveEmotion)return'positive';if((row.emotionIntensity||0)>=7)return'negative';if((row.emotionIntensity||0)>=5)return'neutral';return'positive'} function push(payload){messages.value.push({id:crypto.randomUUID(),timestamp:Date.now(),...payload})}
+function formatTime(t){
+  return new Intl.DateTimeFormat('zh-CN',{hour:'2-digit',minute:'2-digit'}).format(t)}
+function formatSessionTime(d){
+  if(!d)return'刚刚';d=new Date(d);
+  const x=Date.now()-d.getTime();
+  if(x<60000)return'刚刚';
+  if(x<3600000)return`${Math.floor(x/60000)} 分钟前`;
+  if(x<86400000)return`${Math.floor(x/3600000)} 小时前`;
+  return new Intl.DateTimeFormat('zh-CN',{month:'short',day:'numeric'}).format(d)}
+function level(row){
+  if(!row)return'none';
+  if(row.highRisk)return'negative';
+  if(row.positiveEmotion)return'positive';
+  if((row.emotionIntensity||0)>=7&&!(row.positiveEmotion))return'negative';
+  if((row.emotionIntensity||0)>=5)return'neutral';
+  return'positive'}
+function push(payload){
+  messages.value.push({id:crypto.randomUUID(),timestamp:Date.now(),...payload})}
 async function bottom(){await nextTick();if(panelRef.value)panelRef.value.scrollTop=panelRef.value.scrollHeight} function resizeTextarea(){const e=textareaRef.value;if(!e)return;e.style.height='auto';e.style.height=`${Math.min(e.scrollHeight,180)}px`}
 async function loadSessions(){try{sessions.value=(await getSessionList(username.value)).data||[]}catch(e){flash(e.friendlyMessage||'加载会话失败','error')}} async function loadMood(){try{const {data}=await fetchMoodOverview(username.value,90);moodRecords.value=(data.records||[]).slice().sort((a,b)=>String(b.recordDate).localeCompare(String(a.recordDate)))}catch{moodRecords.value=[]}}
 async function openSession(s){sessionId.value=String(s.sessionId);currentTitle.value=s.title||'';localStorage.setItem(LAST,sessionId.value);const local=hydrateLocal();if(local)messages.value=local;try{const {data}=await getSessionDetail(sessionId.value);messages.value=JSON.parse(data.messagesJson||'[]');if(!messages.value.length)messages.value=[welcomeHint(s.title)];persistMessages();flash('已从云端恢复该会话的完整历史。','success')}catch(e){if(!local)messages.value=[welcomeHint(s.title)];flash(e.friendlyMessage||'会话恢复失败','error')}sidebarOpen.value=false;bottom()}
