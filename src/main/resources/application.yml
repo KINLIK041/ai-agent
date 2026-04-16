@@ -32,11 +32,8 @@ langchain4j:
         model-name: qwen-max
         api-key: <your-key>
 bigmodel:
-<<<<<<< HEAD
   api-key: <your-key>
-=======
-  api-key: <your-key>
->>>>>>> 
+
 
 chroma:
   url: http://localhost:8000
