@@ -1,262 +1,246 @@
-# 🤖 AI Agent - 情感感知智能助手
+# 🤖 AI MATE - 智能编程导师 & 情绪陪伴伙伴
 
-> 一个具备情感识别、动态记忆和主动关怀能力的 AI Agent 系统
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21-orange?logo=openjdk&logoColor=white" alt="Java 21"/>
+  <img src="https://img.shields.io/badge/Spring_Boot-3.2-brightgreen?logo=springboot&logoColor=white" alt="Spring Boot 3.2"/>
+  <img src="https://img.shields.io/badge/Vue-3-blue?logo=vue.js&logoColor=white" alt="Vue 3"/>
+  <img src="https://img.shields.io/badge/LangChain4j-Latest-purple?logo=java" alt="LangChain4j"/>
+  <img src="https://img.shields.io/badge/DashScope-Qwen-blueviolet?logo=alibabacloud&logoColor=white" alt="通义千问"/>
+</p>
 
-![Java](https://img.shields.io/badge/Java-21-orange?style=flat-square&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-brightgreen?style=flat-square&logo=spring-boot)
-![Vue](https://img.shields.io/badge/Vue-3.x-blue?style=flat-square&logo=vue.js)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
+<p align="center">
+  💻 代码难题一键解答 · 💝 情绪波动温柔守护 · 🧠 长期记忆懂你所需
+</p>
 
-## 📸 产品展示
+<p align="center">
+  <a href="#-web-demo">Web Demo</a> •
+  <a href="#-mobile-demo">Mobile Demo</a> •
+  <a href="#-快速开始">快速开始</a> •
+  <a href="#-技术栈">技术栈</a> •
+  <a href="#-核心功能">核心功能</a>
+</p>
 
+---
 
+## 🖥️ Web Demo
 
-![项目演示](images/output.gif)
-### 💬 智能对话界面
+> 网页端运行演示视频/截图占位区
 
-<div style="display: flex; gap: 10px; flex-wrap: wrap;">
-  <div style="flex: 1; min-width: 300px;">
-    <p align="center"><strong>浅色模式</strong></p>
-    <img src="./images/chat-screenshot(1).png" alt="浅色模式" width="100%">
-  </div>
-  <div style="flex: 1; min-width: 300px;">
-    <p align="center"><strong>深色模式</strong></p>
-    <img src="./images/chat-screenshot(2).png" alt="深色模式" width="100%">
-  </div>
-</div>
+<!-- 请在此处放置网页端演示 GIF 或视频链接 -->
+![](./images/demo1.gif)
 
-### 📊 情绪分析面板
+**网页端特性：**
+- 三栏响应式布局（历史对话 | 聊天主区 | 情绪记录）
+- 仿苹果设计风格，支持浅色/深色主题切换
+- 交互式侧边面板（点击工具栏按钮弹出）
+- 流式 SSE 打字机效果
 
-<img src="./images/mood-analysis (1).png" alt="情绪分析" width="100%">
+---
 
-### 🧠 记忆管理系统
-<div align="center">
-  <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-    <div style="flex: 1; min-width: 600px;">
-      <img src="./images/memory-management.png" alt="记忆管理概览" width="50%">
-    </div>
-    <div style="flex: 1; min-width: 600px;">
-      <img src="./images/memory-management(2).png" alt="记忆管理详情" width="50%">
-    </div>
-  </div>
-</div>
+## 📱 Mobile Demo
 
-### 📱 移动端适配
+> 移动端运行演示视频/截图占位区
 
-> 移动端界面正在优化中，目前已支持基础的响应式布局。
->
-> （待补充移动端截图）
+<!-- 请在此处放置移动端演示 GIF 或视频链接 -->
+![](./images/demo2.gif)
 
-![移动端](./images/mobile-view.png)
+**移动端特性：**
+- iOS 原生风格设计（毛玻璃导航栏、大圆角、弹性动画）
+- iPhone Safe Area 刘海屏适配
+- 底部 Tab Bar + 侧滑面板交互
+- PWA 支持，可添加到主屏幕
 
-## ✨ 特性
-
-- 🧠 **情感分析** - 实时识别和理解用户情绪状态
-- 💭 **动态记忆** - 基于向量数据库的长期记忆管理
-- 💝 **主动关怀** - 根据情绪历史主动提供心理支持
-- 🌐 **智能对话** - 集成阿里云通义千问大模型
-- 🔧 **工具扩展** - 支持天气查询、面试问题生成等插件
-- 🛡️ **安全防护** - 输入内容安全过滤机制
-
-## 🏗️ 技术架构
-
-### 后端技术栈
-| 技术 | 版本 | 说明 |
-|------|------|------|
-| Spring Boot | 4.x | 核心框架 |
-| Java | 21 | 开发语言 |
-| Spring AI | Latest | AI 应用框架 |
-| ChromaDB | Latest | 向量数据库 |
-| MySQL | 8.0+ | 关系型数据库 |
-| Alibaba DashScope | Latest | 通义千问 API |
-
-### 前端技术栈
-- **Vue 3** - 渐进式 JavaScript 框架
-- **Vite** - 下一代前端构建工具
-
-### 核心技术
-- **MCP** (Model Context Protocol) - 模型上下文协议
-- **RAG** (Retrieval-Augmented Generation) - 检索增强生成
-- **Guardrail** - 输入输出安全护栏
+---
 
 ## 🚀 快速开始
 
-### 前置要求
+### 环境要求
 
-- ☕ JDK 21 或更高版本
-- 📦 Maven 3.6+
-- 🐳 Docker & Docker Compose
-- 🟢 Node.js 18+ (前端开发)
+| 组件 | 版本 |
+|------|------|
+| Java | 21+ |
+| Node.js | 18+ |
+| MySQL | 8.0+ |
+| Maven | 3.8+ |
 
-### 安装步骤
+### 1. 克隆项目
 
-#### 1️⃣ 克隆项目
 ```bash
-git clone https://github.com/KINLIK041/ai-agent.git
-cd ai-agent
-```
-#### 2️⃣ 启动依赖服务
-```bash
-docker-compose up -d
-```
-这将启动 ChromaDB 向量数据库。
-
-#### 3️⃣ 配置环境变量
-
-编辑 `src/main/resources/application.yml`:
-```bash
-yaml
- spring:
-  ai:
-   dashscope:
-    api-key: your-api-key-here # 替换为你的阿里云 API Key
-datasource:
-url: jdbc:mysql://localhost:3306/companion_db
- username: your-username
- password: your-password
+git clone https://github.com/yourusername/ai-code-helper.git
+cd ai-code-helper
 ```
 
-#### 4️⃣ 启动后端服务
-```bash
-mvn spring-boot:run
-```
-后端服务将在 `http://localhost:8080` 启动。
+### 2. 配置后端
 
-#### 5️⃣ 启动前端应用
+编辑 `src/main/resources/application.yml`：
+
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_helper_db?createDatabaseIfNotExist=true
+    username: root
+    password: your-password
+
+langchain4j:
+  community:
+    dashscope:
+      chat-model:
+        api-key: your-dashscope-api-key
+```
+
+### 3. 启动后端
+
+```bash
+# Windows
+./mvnw.cmd spring-boot:run
+
+# macOS/Linux
+./mvnw spring-boot:run
+```
+
+后端服务运行在 `http://localhost:8081/api`
+
+### 4. 启动 Web 前端
+
 ```bash
 cd ai-code-helper-frontend
 npm install
 npm run dev
 ```
-前端应用将在 `http://localhost:5173` 启动。
 
-## 📁 项目结构
-<sub>
-ai-agent/<br>
-├── 📂 src/main/java/com/kinlik/aicodehelper/
-<br>│ ├── 📂 ai/ # AI 核心模块
-<br>│ │ ├── 📂 guardrail/ # 安全过滤层
-<br>│ │ │ └── SafeInputGuardrail.java
-<br>│ │ ├── 📂 listener/ # 监听器配置
-<br>│ │ ├── 📂 mcp/ # MCP 协议配置
-<br>│ │ ├── 📂 rag/ # RAG 配置<br>
-│ │ └── 📂 tools/ # 工具集<br>
-│ │ ├── WeatherTool.java<br>
-│ │ └── InterviewQuestionTool.java<br>
-│ ├── 📂 service/ # 业务服务层<br>
-│ │ ├── CompanionAgentService.java # Agent 核心服务 <br>
-│ │ ├── EmotionAnalysisService.java # 情感分析服务
-<br>│ │ ├── LongTermMemoryService.java # 长期记忆服务<br>
-│ │ ├── ProactiveCareService.java # 主动关怀服务 <br>
-│ │ ├── MoodOverviewService.java # 情绪概览服务<br>
-│ │ └── WeatherService.java # 天气服务 <br>
-│ ├── 📂 repository/ # 数据访问层<br>
-│ ├── 📂 entity/ # 实体类 <br>
-│ │ ├── ChatSession.java<br>
-│ │ ├── MemoryFragment.java <br>
-│ │ ├── MoodRecord.java <br>
-│ │ └── UserProfile.java<br>
-│ └── 📂 config/ # 配置类 <br>
-├── 📂 ai-code-helper-frontend/ # Vue 前端项目 <br>
-├── 📂 data/ # 数据存储目录<br>
-├── 📄 docker-compose.yml # Docker 编排文件 <br>
-└── 📄 pom.xml # Maven 配置文件</sub>
+访问 `http://localhost:5173`
 
-## 🎯 核心功能详解
+### 5. 启动移动端前端
 
-### 情感分析系统
-通过 AI 模型实时分析用户输入的情绪状态,包括:
-- 情绪类型识别(开心、焦虑、沮丧等)
-- 情绪强度评估
-- 情绪趋势追踪
-
-### 动态记忆管理
-基于 ChromaDB 向量数据库实现:
-- 对话历史存储与检索
-- 用户偏好记忆
-- 关键信息提取与关联
-
-### 主动关怀机制
-根据用户情绪历史主动触发:
-- 情绪低落时的安慰提醒
-- 定期心理健康检查
-- 个性化建议推送
-
-## 🔌 API 接口
-
-主要接口端点:
-
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/api/chat` | 发送聊天消息 |
-| GET | `/api/session/{id}` | 获取会话历史 |
-| GET | `/api/mood/overview` | 获取情绪概览 |
-| POST | `/api/memory/search` | 搜索记忆片段 |
-
-## 📊 数据模型
-
-- **ChatSession** - 对话会话记录
-- **MemoryFragment** - 记忆片段(向量化存储)
-- **MoodRecord** - 情绪记录
-- **UserProfile** - 用户画像
-
-## 🛠️ 开发指南
-
-### 添加新工具
-
-1. 在 `src/main/java/com/kinlik/aicodehelper/ai/tools/` 创建工具类
-2. 使用 `@Tool` 注解标记方法
-3. 在配置中注册工具
-
-示例:
 ```bash
-java
-@Component
-public class CustomTool {
-@Tool(description = "工具描述")
-public String execute(String input) {
-// 实现逻辑
-return result;
-} }
+cd ai-code-helper-mobile
+npm install
+npm run dev
 ```
-### 自定义提示词
 
-编辑 `src/main/resources/system-prompt.txt` 修改系统提示词。
-
-## 📝 待办事项
-
-- [ ] 支持更多情绪维度分析
-- [ ] 增加多轮对话上下文优化
-- [ ] 添加用户反馈机制
-- [ ] 实现记忆自动清理策略
-- [ ] 支持更多 AI 模型提供商
-
-## 🤝 贡献指南
-
-欢迎提交 Issue 和 Pull Request!
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 📄 许可证
-
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
-
-## 👤 作者
-
-**KINLIK**
-
-- GitHub: [@KINLIK041](https://github.com/KINLIK041)
-
-## 🙏 致谢
-
-- [Spring AI](https://spring.io/projects/spring-ai) - AI 应用开发框架
-- [Alibaba DashScope](https://dashscope.aliyun.com/) - 通义千问 API
-- [ChromaDB](https://www.trychroma.com/) - 向量数据库
+访问 `http://localhost:5174`，使用 Chrome DevTools 切换至 iPhone 设备模式预览
 
 ---
 
-⭐ 如果这个项目对你有帮助,请给个 Star!
+## 🛠️ 技术栈
+
+### 后端
+
+| 技术 | 用途 |
+|------|------|
+| **Spring Boot 3.2** | 核心框架 |
+| **Java 21** | 开发语言 |
+| **LangChain4j** | AI Agent 编排与 LLM 接入 |
+| **DashScope (通义千问)** | 大语言模型 |
+| **Chroma** | 向量数据库（长期记忆） |
+| **MySQL + JPA** | 会话与情绪数据持久化 |
+| **SSE** | 流式响应 |
+
+### Web 前端
+
+| 技术 | 用途 |
+|------|------|
+| **Vue 3** | 框架 |
+| **Vite** | 构建工具 |
+| **marked** | Markdown 渲染 |
+| **highlight.js** | 代码高亮 |
+| **Axios** | HTTP 客户端 |
+
+### 移动端前端
+
+| 技术 | 用途 |
+|------|------|
+| **Vue 3** | 框架 |
+| **Vite** | 构建工具 |
+| **iOS 原生风格 CSS** | Safe Area、毛玻璃、弹性动画 |
+| **PWA** | 可添加到主屏幕 |
+
+---
+
+## ✨ 核心功能
+
+### 1. 双 Agent 架构
+
+```
+┌─────────────────┐     ┌─────────────────┐
+│  编程助手 Agent  │     │  情绪陪伴 Agent  │
+│  (Code Helper)  │     │  (Companion)    │
+└────────┬────────┘     └────────┬────────┘
+         │                       │
+         ▼                       ▼
+  流式 SSE 聊天            情绪分析与记录
+  面试题生成               主动关怀提醒
+  简历优化建议             天气关联建议
+```
+
+### 2. 情绪量化追踪
+
+- **90 天情绪热力图**：可视化展示情绪变化趋势
+- **高危情绪检测**：自动识别绝望、自残倾向等风险
+- **主动关怀**：每晚 22:00 定时情绪检查
+
+### 3. 长期记忆系统
+
+- **Chroma 向量数据库**：存储对话记忆
+- **语义检索**：基于向量相似度召回相关记忆
+- **用户画像**：MBTI、性格特质、学习偏好
+
+### 4. 跨设备会话同步
+
+- MySQL 持久化存储
+- 本地缓存加速恢复
+- 自动云端同步
+
+---
+
+## 📁 项目结构
+
+```
+ai-code-helper/
+├── src/main/java/com/kinlik/aicodehelper/
+│   ├── Controller/AiController.java      # REST API
+│   ├── service/
+│   │   ├── CompanionAgentService.java    # 情绪陪伴 Agent
+│   │   ├── EmotionAnalysisService.java   # 情绪分析
+│   │   ├── LongTermMemoryService.java    # 向量记忆
+│   │   └── ProactiveCareService.java     # 主动关怀
+│   └── config/CorsConfig.java            # 跨域配置
+├── ai-code-helper-frontend/              # Web 端
+│   ├── src/App.vue
+│   ├── src/api.js
+│   └── src/styles.css
+├── ai-code-helper-mobile/                # 移动端
+│   ├── src/App.vue
+│   ├── src/api.js
+│   └── src/style.css
+└── docker-compose.yml                    # 一键部署
+```
+
+---
+
+## 🔧 部署方式
+
+### Docker 部署（推荐）
+
+```bash
+docker-compose up -d
+```
+
+### 手动部署
+
+1. 启动 MySQL 和 Chroma
+2. 运行后端：`./mvnw spring-boot:run`
+3. 构建前端：`npm run build`
+4. 将 `dist/` 部署到 Nginx
+
+---
+
+## 📄 License
+
+MIT License © 2024 AI MATE
+
+---
+
+<p align="center">
+  Made with ❤️ by KINLIK
+</p>

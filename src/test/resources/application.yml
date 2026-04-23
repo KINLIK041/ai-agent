@@ -18,12 +18,12 @@ langchain4j:
     dashscope:
       chat-model:
         api-key: sk-test-key-for-testing
-        model-name: qwen-max
+        model-name: qwen-math-turbo
       embedding-model:
         api-key: sk-test-key-for-testing
         model-name: text-embedding-v3
       streaming-chat-model:
-        model-name: qwen-max
+        model-name: qwen-math-turbo
         api-key: sk-test-key-for-testing
 
 bigmodel:

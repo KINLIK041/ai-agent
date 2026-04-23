@@ -23,16 +23,16 @@ langchain4j:
   community:
     dashscope:
       chat-model:
-        api-key: <your-key>
-        model-name: qwen-max
+        api-key: <your-api-key>
+        model-name: qwen-math-turbo
       embedding-model:
-        api-key: <your-key>
+        api-key: <your-api-key>
         model-name: text-embedding-v3
       streaming-chat-model:
-        model-name: qwen-max
-        api-key: <your-key>
+        model-name: qwen-math-turbo
+        api-key: <your-api-key>
 bigmodel:
-  api-key: <your-key>
+  api-key: <your-api-key>
 
 chroma:
   url: http://localhost:8000
