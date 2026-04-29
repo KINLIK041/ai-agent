@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-export const API_BASE_URL = 'http://localhost:8081/api';
+// 环境变量配置
+// 开发环境: VITE_API_BASE_URL 未设置时默认 localhost
+// 生产环境: Netlify 会读取 .env.production 或环境变量
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -12,7 +15,7 @@ function normalizeErrorMessage(error) {
   const status = error.response?.status;
   if (status === 404) return '请求的接口不存在，请确认后端服务与 API 路径配置。';
   if (status >= 500) return '服务暂时不可用，请稍后重试。';
-  if (error.request) return '无法连接后端服务，请确认 8081 端口服务已启动。';
+  if (error.request) return '无法连接后端服务，请确认后端服务已启动。';
   return error.response?.data?.message || error.message || '请求失败，请稍后重试。';
 }
 
