@@ -1,7 +1,16 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-})
+  server: {
+    host: 'localhost',
+    port: 5174,
+  },
+  build: {
+    base: '/',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+  },
+  envPrefix: 'VITE_',
+});

@@ -36,6 +36,10 @@ public class CompanionAgentService {
     private ChatModel chatModel;
     @Resource
     private WeatherService weatherService;
+    @Resource
+    private MoodStreakService moodStreakService;
+    @Resource
+    private MemoryService memoryService;
 
     public CompanionResponse chat(String username, String userMessage) {
         UserProfile profile = getOrCreateProfile(username);
@@ -46,7 +50,9 @@ public class CompanionAgentService {
         String aiResponse = chatModel.chat(systemPrompt + "\n\n用户消息: " + userMessage);
         String careAdvice = emotion.needsSupport() ? proactiveCareService.handleNegativeEmotion(username, userMessage, emotion) : null;
         WeatherService.WeatherSummary weather = weatherService.getTodayWeather("Beijing");
-        return new CompanionResponse(aiResponse, emotion, careAdvice, weather);
+        List<String> memoryHints = !relevantMemories.isEmpty()
+                ? relevantMemories.subList(0, Math.min(2, relevantMemories.size())) : List.of();
+        return new CompanionResponse(aiResponse, emotion, careAdvice, weather, memoryHints.isEmpty() ? null : memoryHints.get(0));
     }
 
     public MoodRecord recordDailyMood(String username, MoodInput moodInput) {
@@ -65,6 +71,7 @@ public class CompanionAgentService {
         MoodRecord savedRecord = moodRecordRepository.save(record);
         longTermMemoryService.storeMemory(username, "情绪记录：" + buildMoodContext(moodInput) + "；向量：" + emotion.vector(), "mood", 0.95);
         syncLatestMoodSnapshot(username, emotion, moodInput);
+        moodStreakService.checkAndUnlockBadges(username);
         return savedRecord;
     }
 
@@ -109,6 +116,6 @@ public class CompanionAgentService {
         return prompt.toString();
     }
 
-    public record CompanionResponse(String message, EmotionAnalysisService.EmotionResult emotion, String careAdvice, WeatherService.WeatherSummary weather) {}
+    public record CompanionResponse(String message, EmotionAnalysisService.EmotionResult emotion, String careAdvice, WeatherService.WeatherSummary weather, String rememberedContext) {}
     public record MoodInput(String moodDescription, String triggerEvent) {}
 }

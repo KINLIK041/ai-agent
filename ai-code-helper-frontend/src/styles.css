@@ -181,3 +181,112 @@
   .composer-footer{flex-direction:column;align-items:stretch;gap:10px}
   .send-button{width:100%;min-height:46px}
 }
+
+/* ============================================
+   增强功能样式
+   ============================================ */
+
+/* 鼓励动画 */
+.encouragement-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:200;animation:fadeIn .4s ease}
+.encouragement-card{background:var(--bg-secondary);border-radius:28px;padding:40px 32px;max-width:380px;width:90%;text-align:center;border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.4);animation:cardPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes cardPop{from{transform:scale(.8) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.encouragement-emoji{font-size:60px;margin-bottom:16px;animation:emojiBounce .8s cubic-bezier(.34,1.56,.64,1)}
+@keyframes emojiBounce{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0)}}
+.encouragement-quote{font-size:18px;font-weight:700;color:var(--text-primary);line-height:1.7;margin:0 0 14px}
+.encouragement-streak{font-size:14px;color:var(--accent-primary);font-weight:600;margin:0}
+.streak-fire{font-size:16px}
+
+/* 呼吸练习 */
+.breathing-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(20px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:28px}
+.breathing-circle{width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.3),transparent);display:flex;align-items:center;justify-content:center;transition:all 1s ease}
+.breathing-circle.inhale{transform:scale(1.3);background:radial-gradient(circle,rgba(16,185,129,.4),transparent)}
+.breathing-circle.hold{transform:scale(1.3);background:radial-gradient(circle,rgba(245,158,11,.35),transparent)}
+.breathing-circle.exhale{transform:scale(.8);background:radial-gradient(circle,rgba(99,102,241,.25),transparent)}
+.breath-instruction{font-size:20px;font-weight:700;color:#fff;text-align:center}
+.breathing-progress{position:relative;width:120px;height:120px}
+.breathing-progress svg{transform:rotate(-90deg)}
+.progress-bg{stroke:rgba(255,255,255,.15);fill:none;stroke-width:5}
+.progress-ring{stroke:var(--accent-primary);fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1s linear}
+.breathing-timer{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:#fff}
+.breathing-skip{padding:10px 28px;border-radius:999px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.7);font-size:14px;font-weight:500;backdrop-filter:blur(8px)}
+
+/* 危机热线 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:100;animation:fadeIn .3s ease}
+.modal-box{background:var(--bg-secondary);border-radius:24px;padding:24px;max-width:440px;width:92%;border:1px solid var(--border);box-shadow:var(--shadow);animation:modalIn .35s cubic-bezier(.32,.72,0,1)}
+@keyframes modalIn{from{transform:translateY(20px) scale(.96);opacity:0}to{transform:translateY(0) scale(1);opacity:1}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-header h3{margin:0;font-size:20px;font-weight:700;color:var(--text-primary)}
+.modal-body{display:flex;flex-direction:column;gap:10px}
+.setting-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border);cursor:pointer;font-size:15px;transition:background .2s}
+.setting-row:hover{background:rgba(255,255,255,.08)}
+.setting-input{background:transparent;border:none;outline:none;color:var(--accent-primary);font-size:15px;font-weight:600;text-align:right;max-width:120px}
+.setting-select{background:transparent;border:none;outline:none;color:var(--accent-primary);font-size:15px;font-weight:600;cursor:pointer}
+.crisis-intro{font-size:14px;color:var(--text-secondary);line-height:1.7;margin:0}
+.contact-item{display:flex;flex-direction:column;gap:2px;padding:13px 16px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)}
+.contact-name{font-size:14px;font-weight:700;color:var(--text-primary)}
+.contact-phone{font-size:16px;font-weight:800;color:var(--accent-primary);text-decoration:none}
+.contact-phone:hover{opacity:.8}
+.contact-item small{font-size:12px;color:var(--text-tertiary)}
+.crisis-quotes{padding:12px 14px;background:rgba(255,255,255,.04);border-radius:14px}
+.crisis-quote{font-size:13px;color:var(--text-secondary);margin:0;line-height:1.7}
+.breathing-btn{width:100%;padding:13px;border-radius:14px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#fff;font-size:15px;font-weight:700;box-shadow:0 6px 20px rgba(99,102,241,.35);margin-top:4px}
+.breathing-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(99,102,241,.4)}
+.crisis-link{display:inline-block;margin-top:6px;padding:5px 12px;border-radius:8px;background:rgba(239,68,68,.12);color:#f87171;font-size:12px;font-weight:600}
+
+/* 连续打卡 */
+.streak-card{margin-bottom:14px;padding:16px;border-radius:20px;background:linear-gradient(135deg,rgba(245,158,11,.12),rgba(239,68,0,.08));border:1px solid rgba(245,158,11,.2)}
+.streak-main{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.streak-fire{font-size:22px}
+.streak-count{font-size:32px;font-weight:900;color:var(--accent-primary);line-height:1}
+.streak-unit{font-size:13px;color:var(--text-secondary);font-weight:500}
+.streak-best{font-size:12px;color:var(--text-tertiary);margin-bottom:10px}
+.milestone-bar{font-size:12px;color:var(--text-secondary)}
+.progress-track{height:6px;background:rgba(255,255,255,.1);border-radius:999px;margin-top:4px;margin-bottom:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-primary),var(--accent-secondary));border-radius:999px;transition:width .6s cubic-bezier(.32,.72,0,1)}
+
+/* 成就墙 */
+.achievement-section{margin:12px 0}
+.section-title{font-size:14px;font-weight:700;color:var(--text-primary);margin:0 0 10px}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.badge-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 8px;border-radius:16px;background:rgba(255,255,255,.04);border:1px solid var(--border);transition:all .2s;cursor:default}
+.badge-item:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+.badge-item.locked{opacity:.45;filter:grayscale(.7)}
+.badge-item:not(.locked){border-color:rgba(245,158,11,.3);background:linear-gradient(135deg,rgba(245,158,11,.06),rgba(239,68,0,.04))}
+.badge-icon{font-size:28px;line-height:1}
+.badge-name{font-size:11px;font-weight:600;color:var(--text-secondary);text-align:center;line-height:1.3}
+
+/* 本周目标 */
+.goal-card{margin-top:12px;padding:16px;border-radius:20px;background:linear-gradient(180deg,rgba(15,23,42,.72),rgba(30,41,59,.86));border:1px solid var(--border)}
+.theme-day .goal-card{background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(238,242,255,.98))}
+.goal-content{margin-bottom:10px}
+.goal-type{font-size:13px;font-weight:600;color:var(--text-primary);display:block;margin-bottom:6px}
+.goal-bar{height:8px;background:rgba(255,255,255,.1);border-radius:999px;margin-bottom:4px;overflow:hidden}
+.goal-fill{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:999px;transition:width .5s cubic-bezier(.32,.72,0,1)}
+.goal-count{font-size:12px;color:var(--text-tertiary)}
+.goal-btn{width:100%;padding:10px;border-radius:12px;background:linear-gradient(135deg,var(--accent-primary),var(--accent-secondary));color:#fff;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(99,102,241,.3)}
+.goal-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(99,102,241,.35)}
+.goal-btn:disabled{opacity:.6;transform:none;box-shadow:none;background:linear-gradient(135deg,#10b981,#34d399)}
+
+/* 记忆管理 */
+.memory-body{}
+.back-btn{background:transparent;border:none;color:var(--accent-primary);font-size:13px;font-weight:600;cursor:pointer;padding:4px 8px;border-radius:8px;margin-bottom:10px;display:inline-flex;align-items:center;gap:4px}
+.back-btn:hover{background:rgba(99,102,241,.1)}
+.memory-hint{font-size:13px;color:var(--text-tertiary);margin:0 0 12px;line-height:1.6}
+.memory-list{display:flex;flex-direction:column;gap:8px;max-height:380px;overflow-y:auto}
+.memory-item{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--border);transition:background .2s}
+.memory-item:hover{background:rgba(255,255,255,.08)}
+.memory-content{font-size:13px;color:var(--text-primary);line-height:1.6;margin-bottom:6px}
+.memory-meta{display:flex;justify-content:space-between;align-items:center}
+.memory-meta span{font-size:12px;color:var(--text-tertiary)}
+.delete-btn{background:transparent;border:none;color:#f87171;font-size:12px;font-weight:600;cursor:pointer;padding:2px 8px;border-radius:6px}
+.delete-btn:hover{background:rgba(239,68,68,.1)}
+
+/* AI记忆标签 */
+.memory-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;margin-bottom:6px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.25);border-radius:10px;font-size:12px;color:var(--accent-primary);font-weight:500;animation:slideDown .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* 可点击信息标签 */
+.clickable{cursor:pointer;transition:background .2s}
+.clickable:hover{background:rgba(99,102,241,.1)}
+

@@ -3,9 +3,7 @@ package com.kinlik.aicodehelper.Controller;
 import com.kinlik.aicodehelper.ai.AiCodeHelperService;
 import com.kinlik.aicodehelper.entity.ChatSession;
 import com.kinlik.aicodehelper.repository.ChatSessionRepository;
-import com.kinlik.aicodehelper.service.CompanionAgentService;
-import com.kinlik.aicodehelper.service.MoodOverviewService;
-import com.kinlik.aicodehelper.service.ProactiveCareService;
+import com.kinlik.aicodehelper.service.*;
 import jakarta.annotation.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +29,12 @@ public class AiController {
     private MoodOverviewService moodOverviewService;
     @Resource
     private ChatSessionRepository chatSessionRepository;
+    @Resource
+    private MoodStreakService moodStreakService;
+    @Resource
+    private MemoryService memoryService;
+    @Resource
+    private NotificationHandler notificationHandler;
 
     @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> chat(int memoryId, String message) {
@@ -45,6 +49,7 @@ public class AiController {
         return ResponseEntity.ok(Map.of(
                 "message", response.message(),
                 "careAdvice", response.careAdvice() == null ? "" : response.careAdvice(),
+                "rememberedContext", response.rememberedContext() == null ? "" : response.rememberedContext(),
                 "weather", Map.of(
                         "city", response.weather().city(),
                         "description", response.weather().description(),
@@ -155,4 +160,89 @@ public class AiController {
     public record ChatRequest(String username, String message) {}
     public record MoodRequest(String username, String moodDescription, String triggerEvent) {}
     public record SessionRequest(String username, String sessionId, String title, String lastMessage, String messagesJson, Boolean pinned) {}
+
+    // ===== 情绪打卡连续天数 & 成就系统 =====
+    @GetMapping("/companion/mood/streak")
+    public ResponseEntity<MoodStreakService.MoodStreakResponse> getMoodStreak(
+            @RequestParam(required = false) String username) {
+        String actualUsername = username != null ? username : "KINLIK";
+        MoodStreakService.MoodStreakResponse streak = moodStreakService.getMoodStreak(actualUsername);
+        return ResponseEntity.ok(streak);
+    }
+
+    @PostMapping("/companion/mood/check-in")
+    public ResponseEntity<Map<String, Object>> recordMoodCheckIn(@RequestBody MoodRequest request) {
+        String username = request.username() != null ? request.username() : "KINLIK";
+        var record = companionAgentService.recordDailyMood(username,
+                new CompanionAgentService.MoodInput(request.moodDescription(), request.triggerEvent()));
+        moodStreakService.checkAndUnlockBadges(username);
+        moodStreakService.recordWeeklyProgress(username);
+        return ResponseEntity.ok(Map.of(
+                "message", "打卡成功",
+                "recordDate", record.getRecordDate(),
+                "emotionType", record.getEmotionType(),
+                "emotionIntensity", record.getEmotionIntensity(),
+                "positiveEmotion", record.getPositiveEmotion(),
+                "highRisk", record.getHighRisk(),
+                "quote", moodStreakService.getRandomQuote(),
+                "streak", moodStreakService.getMoodStreak(username)
+        ));
+    }
+
+    // ===== 本周目标 =====
+    @GetMapping("/companion/goal/current")
+    public ResponseEntity<MoodStreakService.WeeklyGoalResponse> getWeeklyGoal(
+            @RequestParam(required = false) String username) {
+        String actualUsername = username != null ? username : "KINLIK";
+        return ResponseEntity.ok(moodStreakService.getWeeklyGoal(actualUsername));
+    }
+
+    @PostMapping("/companion/goal/record")
+    public ResponseEntity<MoodStreakService.WeeklyGoalResponse> recordGoalProgress(
+            @RequestParam(required = false) String username) {
+        String actualUsername = username != null ? username : "KINLIK";
+        return ResponseEntity.ok(moodStreakService.recordWeeklyProgress(actualUsername));
+    }
+
+    // ===== AI 记忆管理 =====
+    @GetMapping("/memory/list")
+    public ResponseEntity<List<MemoryService.MemoryFragmentView>> getMemories(
+            @RequestParam(required = false) String username) {
+        String actualUsername = username != null ? username : "KINLIK";
+        return ResponseEntity.ok(memoryService.getMemories(actualUsername));
+    }
+
+    @DeleteMapping("/memory/{id}")
+    public ResponseEntity<Map<String, Object>> deleteMemory(
+            @PathVariable Long id,
+            @RequestParam(required = false) String username) {
+        String actualUsername = username != null ? username : "KINLIK";
+        memoryService.deleteMemory(id, actualUsername);
+        return ResponseEntity.ok(Map.of("success", true, "message", "记忆已删除"));
+    }
+
+    // ===== WebSocket 通知注册 =====
+    @PostMapping("/notification/register")
+    public ResponseEntity<Map<String, Object>> registerNotification(
+            @RequestParam String username,
+            @RequestParam(required = false) String token) {
+        return ResponseEntity.ok(Map.of("success", true, "message", "通知注册成功"));
+    }
+
+    // ===== 危机热线资源 =====
+    @GetMapping("/companion/crisis-resources")
+    public ResponseEntity<Map<String, Object>> getCrisisResources() {
+        List<Map<String, String>> contacts = List.of(
+                Map.of("name", "心理危机干预中心", "phone", "010-82951332", "hours", "24小时"),
+                Map.of("name", "希望24热线", "phone", "400-161-9995", "hours", "24小时"),
+                Map.of("name", "青少年服务热线", "phone", "12355", "hours", "全天候"),
+                Map.of("name", "全国卫生热线", "phone", "12320", "hours", "工作日")
+        );
+        List<String> quotes = List.of(
+                "你并不孤单，愿意帮助你的人就在这里。",
+                "此刻的痛苦只是暂时的，一切都会好起来的。",
+                "寻求帮助是勇敢的表现，不是软弱。"
+        );
+        return ResponseEntity.ok(Map.of("contacts", contacts, "calmingQuotes", quotes));
+    }
 }

@@ -1,6 +1,35 @@
 <template>
   <div class="app-shell" :class="themeClass">
-    <!-- 顶部导航栏 -->
+
+    <!-- ==================== 鼓励动画遮罩层 ==================== -->
+    <div v-if="showEncouragement" class="encouragement-overlay" @click="showEncouragement = false">
+      <div class="encouragement-card">
+        <div class="encouragement-emoji">{{ encouragementEmoji }}</div>
+        <p class="encouragement-quote">{{ displayedQuote }}</p>
+        <p v-if="encouragementStreak > 0" class="encouragement-streak">
+          <span class="streak-fire">🔥</span> 连续 {{ encouragementStreak }} 天
+        </p>
+      </div>
+    </div>
+
+    <!-- ==================== 呼吸练习遮罩 ==================== -->
+    <div v-if="showBreathing" class="breathing-overlay" @click="closeBreathing">
+      <div class="breathing-circle" :class="breathingPhase">
+        <span class="breath-instruction">{{ breathingInstruction }}</span>
+      </div>
+      <div class="breathing-progress">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="54" class="progress-bg" />
+          <circle cx="60" cy="60" r="54" class="progress-ring"
+            :stroke-dasharray="339.3"
+            :stroke-dashoffset="breathingOffset" />
+        </svg>
+        <span class="breathing-timer">{{ breathingCountdown }}s</span>
+      </div>
+      <button class="breathing-skip" @click="closeBreathing">跳过</button>
+    </div>
+
+    <!-- ==================== 顶部导航栏 ==================== -->
     <header class="mobile-nav">
       <button class="nav-btn" @click="sidebarOpen = !sidebarOpen">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
@@ -11,7 +40,7 @@
       </button>
     </header>
 
-    <!-- 历史对话侧边面板 -->
+    <!-- ==================== 历史对话侧边面板 ==================== -->
     <aside class="side-drawer left" :class="{ open: sidebarOpen }">
       <div class="drawer-header">
         <h2>历史对话</h2>
@@ -46,7 +75,7 @@
       </div>
     </aside>
 
-    <!-- 情绪记录侧边面板 -->
+    <!-- ==================== 情绪记录侧边面板（增强版）==================== -->
     <aside class="side-drawer right" :class="{ open: moodOpen }">
       <div class="drawer-header">
         <h2>情绪记录</h2>
@@ -54,12 +83,35 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
+
+      <!-- 打卡卡片 -->
       <div class="mood-card">
+        <!-- 连续打卡头 -->
+        <div class="streak-header" v-if="streakData">
+          <div class="streak-main">
+            <span class="streak-fire">🔥</span>
+            <span class="streak-count">{{ streakData.currentStreak }}</span>
+            <span class="streak-unit">天连续记录</span>
+          </div>
+          <span class="streak-best">历史最高 {{ streakData.bestStreak }} 天</span>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="milestone-progress" v-if="streakData && streakData.nextMilestone > 0">
+          <p>再坚持 <strong>{{ streakData.nextMilestone }} 天</strong> 解锁「{{ streakData.nextBadge }}」</p>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" :style="{ width: Math.min((streakData.currentStreak % 7) / 7 * 100, 100) + '%' }"></div>
+          </div>
+        </div>
+
+        <!-- 情绪图例 -->
         <div class="mood-legend">
           <span class="legend positive">积极</span>
           <span class="legend neutral">平稳</span>
           <span class="legend negative">消极</span>
         </div>
+
+        <!-- 90天热力图 -->
         <div class="mood-grid">
           <div
             v-for="d in moodDays"
@@ -69,7 +121,10 @@
             :title="`${d.date} ${d.label}`"
           ></div>
         </div>
+
         <p class="mood-summary">{{ moodSummary }}</p>
+
+        <!-- 情绪记录列表 -->
         <ul class="mood-list">
           <li v-for="item in moodRecords.slice(0, 5)" :key="item.recordDate + item.emotionType">
             <strong>{{ item.recordDate }}</strong>
@@ -78,17 +133,57 @@
           </li>
         </ul>
       </div>
+
+      <!-- 成就墙 -->
+      <div class="achievement-section">
+        <h3 class="section-title">🏅 成就墙</h3>
+        <div class="badge-grid" v-if="streakData && streakData.allBadges">
+          <div
+            v-for="badge in streakData.allBadges"
+            :key="badge.id"
+            class="badge-item"
+            :class="{ locked: !badge.unlocked }"
+            :title="badge.unlocked ? `${badge.name} - ${badge.requirement}` : `未解锁: ${badge.requirement}`"
+          >
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <span class="badge-name">{{ badge.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 本周目标 -->
+      <div class="goal-section" v-if="weeklyGoal">
+        <h3 class="section-title">📅 本周目标</h3>
+        <div class="weekly-goal-card">
+          <div class="goal-info">
+            <span class="goal-type">{{ goalTypeName(weeklyGoal.type) }}</span>
+            <div class="goal-progress-bar">
+              <div class="goal-progress-fill" :style="{ width: (weeklyGoal.currentCount / weeklyGoal.targetCount * 100) + '%' }"></div>
+            </div>
+            <span class="goal-count">{{ weeklyGoal.currentCount }} / {{ weeklyGoal.targetCount }}</span>
+          </div>
+          <button class="complete-goal-btn" @click="handleRecordGoal" :disabled="weeklyGoal.completed">
+            {{ weeklyGoal.completed ? '✓ 已完成' : '记录完成' }}
+          </button>
+        </div>
+      </div>
     </aside>
 
-    <!-- 遮罩层 -->
+    <!-- ==================== 遮罩层 ==================== -->
     <div class="overlay" :class="{ show: sidebarOpen || moodOpen }" @click="closePanels"></div>
 
-    <!-- 主内容区 -->
+    <!-- ==================== 主内容区 ==================== -->
     <main class="chat-layout">
-      <!-- 消息列表 -->
       <section ref="panelRef" class="message-panel">
         <div v-for="m in messages" :key="m.id" class="message-row" :class="m.role">
           <article class="bubble" :class="['bubble-' + m.role, m.variant ? `bubble-${m.variant}` : '']">
+
+            <!-- AI记忆标签 -->
+            <div v-if="m.rememberedContext && m.role === 'ai'" class="memory-tag">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+              AI 记得：{{ m.rememberedContext }}
+            </div>
+
             <div v-if="m.role !== 'system'" class="bubble-meta">
               <span :class="m.role === 'user' ? 'speaker-user' : 'speaker-ai'">{{ m.role === 'user' ? username : (m.label || 'AI MATE') }}</span>
               <time>{{ formatTime(m.timestamp) }}</time>
@@ -107,7 +202,10 @@
           <span>{{ weather.description }} · {{ weather.temperature }} · 湿度 {{ weather.humidity }}</span>
           <p>{{ weather.suggestion }}</p>
         </div>
-        <div v-if="highRiskWarning" class="notice error">{{ highRiskWarning }}</div>
+        <div v-if="highRiskWarning" class="notice error">
+          {{ highRiskWarning }}
+          <button class="crisis-link" @click="showCrisisResources = true">查看急救资源</button>
+        </div>
         <form class="composer" @submit.prevent="send">
           <textarea
             ref="textareaRef"
@@ -128,7 +226,7 @@
       </section>
     </main>
 
-    <!-- 底部标签栏 -->
+    <!-- ==================== 底部标签栏 ==================== -->
     <nav class="tab-bar">
       <button class="tab-item" :class="{ active: currentTab === 'chat' }" @click="currentTab = 'chat'">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -138,22 +236,24 @@
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M2 12h20"/></svg>
         <span>情绪</span>
       </button>
-      <button class="tab-item" :class="{ active: currentTab === 'me' }" @click="showSettings = true; currentTab = 'me'">
+      <button class="tab-item" :class="{ active: currentTab === 'me' }" @click="currentTab = 'me'">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span>我的</span>
       </button>
     </nav>
 
-    <!-- 设置弹窗 -->
-    <div class="modal" :class="{ show: showSettings }" @click="showSettings = false">
+    <!-- ==================== 设置 / 我的页面弹窗 ==================== -->
+    <div class="modal" :class="{ show: showSettings || currentTab === 'me' }" @click="showSettings = false; currentTab = 'chat'">
       <div class="modal-content" @click.stop>
         <div class="modal-header">
-          <h3>设置</h3>
-          <button class="close-btn" @click="showSettings = false">
+          <h3>{{ currentTab === 'me' ? '我的' : '设置' }}</h3>
+          <button class="close-btn" @click="showSettings = false; currentTab = 'chat'">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
         </div>
-        <div class="modal-body">
+
+        <!-- 设置面板 -->
+        <div v-if="currentTab === 'chat' || currentTab === 'me'" class="modal-body">
           <div class="setting-row">
             <span>用户名</span>
             <input v-model="username" class="setting-input" maxlength="20" />
@@ -170,6 +270,66 @@
             <span>Chat ID</span>
             <strong class="setting-value">#{{ sessionId }}</strong>
           </div>
+
+          <!-- 记忆管理入口 -->
+          <div class="setting-row memory-manage-btn" @click="showMemoryManagement = true; currentTab = 'memory'">
+            <span>🧠 AI 记忆管理</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+
+          <!-- 成就入口 -->
+          <div class="setting-row" @click="moodOpen = true">
+            <span>🏅 成就墙</span>
+            <span class="setting-value">{{ unlockedBadgeCount }} / {{ (streakData?.allBadges || []).length }}</span>
+          </div>
+        </div>
+
+        <!-- 记忆管理面板 -->
+        <div v-if="currentTab === 'memory'" class="modal-body memory-management">
+          <div class="memory-header">
+            <button class="back-btn" @click="currentTab = 'me'; showSettings = false">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              返回
+            </button>
+            <h3>🧠 AI 记忆</h3>
+          </div>
+          <p class="memory-hint">以下是 AI 记住的关于你的信息，你可以删除不需要的记忆。</p>
+          <div class="memory-list">
+            <div v-for="m in memories" :key="m.id" class="memory-item">
+              <div class="memory-content">{{ m.content }}</div>
+              <div class="memory-meta">
+                <span class="memory-date">{{ formatDate(m.createdAt) }}</span>
+                <button class="delete-btn" @click="handleDeleteMemory(m.id)">删除</button>
+              </div>
+            </div>
+            <div v-if="!memories.length" class="empty-memories">AI 还没有记住任何内容</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 危机热线弹窗 ==================== -->
+    <div class="modal" :class="{ show: showCrisisResources }" @click="showCrisisResources = false">
+      <div class="modal-content crisis-modal" @click.stop>
+        <div class="modal-header">
+          <h3>🆘 急救资源</h3>
+          <button class="close-btn" @click="showCrisisResources = false">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="modal-body crisis-body">
+          <p class="crisis-intro">你并不孤单。以下资源可以立即帮助你：</p>
+          <div v-for="c in crisisContacts" :key="c.name" class="contact-item">
+            <span class="contact-name">{{ c.name }}</span>
+            <a :href="'tel:' + c.phone" class="contact-phone">{{ c.phone }}</a>
+            <small>{{ c.hours }}</small>
+          </div>
+          <div class="crisis-quotes" v-if="crisisQuotes.length">
+            <p v-for="q in crisisQuotes" :key="q" class="crisis-quote">{{ q }}</p>
+          </div>
+          <button class="breathing-trigger" @click="startBreathing">
+            🫁 开始呼吸练习
+          </button>
         </div>
       </div>
     </div>
@@ -180,13 +340,13 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { marked } from 'marked';
 import hljs from 'highlight.js';
-import 'highlight.js/styles/github-dark.css';
-import { createChatStreamUrl, fetchMoodOverview, getSessionDetail, getSessionList, saveMood, saveSession, sendCompanionMessage } from './api';
+import { createChatStreamUrl, fetchCrisisResources, fetchMemories, fetchMoodOverview, fetchMoodStreak, fetchWeeklyGoal, getSessionDetail, getSessionList, recordMoodCheckIn, recordWeeklyGoal, saveSession, sendCompanionMessage } from './api';
 
 const THEME = 'theme-preference-mobile';
 const CACHE = 'ai-mate-session-cache-mobile';
 const LAST = 'ai-mate-last-session-id-mobile';
 
+// 状态
 const username = ref('KINLIK');
 const input = ref('');
 const streaming = ref(false);
@@ -203,10 +363,41 @@ const currentTab = ref('chat');
 const panelRef = ref(null);
 const textareaRef = ref(null);
 const currentEventSource = ref(null);
+
+// 情绪相关
 const moodRecords = ref([]);
-const currentTitle = ref('');
-const weather = ref({});
-const highRiskWarning = ref('');
+const streakData = ref(null);
+const weeklyGoal = ref(null);
+const memories = ref([]);
+const showCrisisResources = ref(false);
+const crisisContacts = ref([]);
+const crisisQuotes = ref([]);
+const showMemoryManagement = ref(false);
+
+// 鼓励动画
+const showEncouragement = ref(false);
+const encouragementEmoji = ref('🌸');
+const encouragementQuote = ref('');
+const displayedQuote = ref('');
+const encouragementStreak = ref(0);
+
+// 呼吸练习
+const showBreathing = ref(false);
+const breathingPhase = ref('inhale');
+const breathingInstruction = ref('吸气...');
+const breathingCountdown = ref(4);
+const breathingOffset = ref(339.3);
+const BREATHING_PHASES = [
+  { phase: 'inhale', duration: 4000, instruction: '吸气...', offset: 0 },
+  { phase: 'hold', duration: 4000, instruction: '屏住...', offset: 85 },
+  { phase: 'exhale', duration: 6000, instruction: '呼气...', offset: 339 },
+];
+let breathingTimer = null;
+let quoteInterval = null;
+
+const unlockedBadgeCount = computed(() =>
+  (streakData.value?.allBadges || []).filter(b => b.unlocked).length
+);
 
 marked.setOptions({ breaks: true, gfm: true });
 const renderer = new marked.Renderer();
@@ -251,6 +442,7 @@ const moodSummary = computed(() =>
     : '最近 90 天暂无情绪记录'
 );
 
+// 工具函数
 function id() { return String(Math.floor(100000 + Math.random() * 900000)); }
 function resolveTheme() {
   return themePreference.value === 'auto'
@@ -264,14 +456,12 @@ function hydrateLocal() { const c = read(CACHE); return c[sessionId.value] || nu
 function cut(t, n) { return !t ? '' : (t.length > n ? `${t.slice(0, n)}…` : t); }
 function renderMarkdown(t) {
   const raw = (t || '').replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '').replace(/javascript:/gi, '');
-  // 流式传输中，如果内容以 ** 开头但缺少闭合，临时隐藏未闭合的 markdown 标记
   let processed = raw;
   const boldMatches = raw.match(/\*\*/g);
   if (boldMatches && boldMatches.length % 2 !== 0) {
     const lastIdx = raw.lastIndexOf('**');
     processed = raw.slice(0, lastIdx) + '\u200B**' + raw.slice(lastIdx + 2);
   }
-  // 同样处理未闭合的 *
   const emMatches = processed.match(/(?<!\*)\*(?!\*)/g);
   if (emMatches && emMatches.length % 2 !== 0) {
     const lastIdx = processed.lastIndexOf('*');
@@ -297,6 +487,11 @@ function formatSessionTime(d) {
   if (x < 86400000) return `${Math.floor(x / 3600000)} 小时前`;
   return new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric' }).format(d);
 }
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  return new Intl.DateTimeFormat('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(date);
+}
 function level(row) {
   if (!row) return 'none';
   if (row.highRisk) return 'negative';
@@ -304,6 +499,10 @@ function level(row) {
   if ((row.emotionIntensity || 0) >= 7 && !row.positiveEmotion) return 'negative';
   if ((row.emotionIntensity || 0) >= 5) return 'neutral';
   return 'positive';
+}
+function goalTypeName(type) {
+  const map = { GRATITUDE: '🙏 感恩记录', MINDFULNESS: '🧘 正念练习', EXERCISE: '🏃 运动打卡', SOCIAL: '🤝 社交互动', CONSISTENCY: '📝 连续记录' };
+  return map[type] || type;
 }
 function push(payload) { messages.value.push({ id: crypto.randomUUID(), timestamp: Date.now(), ...payload }); }
 function closePanels() { sidebarOpen.value = false; moodOpen.value = false; }
@@ -316,8 +515,9 @@ function resizeTextarea() {
   e.style.height = `${Math.min(e.scrollHeight, 120)}px`;
 }
 
+// 加载数据
 async function loadSessions() {
-  try { sessions.value = (await getSessionList(username.value)).data || []; } catch (e) { flash(e.friendlyMessage || '加载会话失败', 'error'); }
+  try { sessions.value = (await getSessionList(username.value)).data || []; } catch { sessions.value = []; }
 }
 async function loadMood() {
   try {
@@ -325,7 +525,33 @@ async function loadMood() {
     moodRecords.value = (data.records || []).slice().sort((a, b) => String(b.recordDate).localeCompare(String(a.recordDate)));
   } catch { moodRecords.value = []; }
 }
+async function loadStreak() {
+  try {
+    const { data } = await fetchMoodStreak(username.value);
+    streakData.value = data;
+  } catch { streakData.value = null; }
+}
+async function loadWeeklyGoal() {
+  try {
+    const { data } = await fetchWeeklyGoal(username.value);
+    weeklyGoal.value = data;
+  } catch { weeklyGoal.value = null; }
+}
+async function loadMemories() {
+  try {
+    const { data } = await fetchMemories(username.value);
+    memories.value = data || [];
+  } catch { memories.value = []; }
+}
+async function loadCrisisResources() {
+  try {
+    const { data } = await fetchCrisisResources();
+    crisisContacts.value = data.contacts || [];
+    crisisQuotes.value = data.calmingQuotes || [];
+  } catch {}
+}
 
+// 会话操作
 async function openSession(s) {
   sessionId.value = String(s.sessionId);
   currentTitle.value = s.title || '';
@@ -339,7 +565,7 @@ async function openSession(s) {
     persistMessages();
     flash('已从云端恢复该会话', 'success');
   } catch (e) {
-    if (!local) messages.value = [welcomeHint(s.title)];
+    if (!messages.value.length) messages.value = [welcomeHint(s.title)];
     flash(e.friendlyMessage || '会话恢复失败', 'error');
   }
   sidebarOpen.value = false;
@@ -364,6 +590,7 @@ function welcomeHint(title) {
   return { id: crypto.randomUUID(), role: 'system', content: `已恢复到会话 **${title || '未命名对话'}**。`, timestamp: Date.now() };
 }
 
+// 发送消息
 async function startStream(text) {
   const ai = { id: crypto.randomUUID(), role: 'ai', label: 'AI MATE', content: '', typing: true, timestamp: Date.now() };
   messages.value.push(ai);
@@ -395,13 +622,13 @@ async function saveCurrentSession(userMessage, aiResponse) {
 
 async function companion(text) {
   try {
-    await saveMood({ username: username.value, moodDescription: text, triggerEvent: '' });
     const { data } = await sendCompanionMessage({ username: username.value, message: text });
     weather.value = data.weather || {};
-    highRiskWarning.value = data.emotion?.highRisk ? '检测到高危情绪，请优先联系可信任的人或专业热线 12356。' : '';
-    push({ role: 'ai', label: 'AI MATE', variant: 'companion', content: data.message, emotion: data.emotion });
+    highRiskWarning.value = data.emotion?.highRisk ? '检测到高危情绪，请优先联系可信任的人或专业热线。' : '';
+    // 带记忆标签的AI回复
+    push({ role: 'ai', label: 'AI MATE', variant: 'companion', content: data.message, rememberedContext: data.rememberedContext });
     if (data.careAdvice) { push({ role: 'system', variant: data.emotion?.highRisk ? 'error' : 'care', content: data.careAdvice }); }
-    loadMood();
+    loadMood(); loadStreak(); loadWeeklyGoal();
   } catch (e) { push({ role: 'system', variant: 'error', content: e.friendlyMessage || '陪伴分析失败。' }); }
 }
 
@@ -415,8 +642,119 @@ async function send() {
 }
 function handleKeydown(e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); send(); } }
 
+// 情绪打卡
+async function handleMoodCheckIn() {
+  const text = input.value.trim();
+  if (!text) return;
+  try {
+    const { data } = await recordMoodCheckIn({ username: username.value, moodDescription: text, triggerEvent: '' });
+    encouragementEmoji.value = data.positiveEmotion ? '🌸' : '🌿';
+    encouragementQuote.value = data.quote || '记录成功，继续加油！';
+    encouragementStreak.value = data.streak?.currentStreak || 0;
+    triggerEncouragementAnimation();
+    input.value = ''; resizeTextarea();
+    loadMood(); loadStreak(); loadWeeklyGoal();
+  } catch (e) { flash('打卡失败', 'error'); }
+}
+
+// 鼓励动画
+function triggerEncouragementAnimation() {
+  showEncouragement.value = true;
+  displayedQuote.value = '';
+  let i = 0;
+  quoteInterval = setInterval(() => {
+    displayedQuote.value = encouragementQuote.value.slice(0, i++);
+    if (i > encouragementQuote.value.length) clearInterval(quoteInterval);
+  }, 60);
+  setTimeout(() => {
+    showEncouragement.value = false;
+    clearInterval(quoteInterval);
+  }, 3500);
+}
+
+// 呼吸练习
+function startBreathing() {
+  showCrisisResources.value = false;
+  showBreathing.value = true;
+  breathingOffset.value = 339.3;
+  runBreathingCycle();
+}
+
+function runBreathingCycle() {
+  let phaseIdx = 0;
+  function runPhase() {
+    if (!showBreathing.value) return;
+    const p = BREATHING_PHASES[phaseIdx];
+    breathingPhase.value = p.phase;
+    breathingInstruction.value = p.instruction;
+    breathingCountdown.value = Math.round(p.duration / 1000);
+    breathingOffset.value = p.offset;
+
+    let countdown = Math.round(p.duration / 1000);
+    const countdownTimer = setInterval(() => {
+      breathingCountdown.value = --countdown;
+      if (countdown <= 0) clearInterval(countdownTimer);
+    }, 1000);
+
+    breathingTimer = setTimeout(() => {
+      clearInterval(countdownTimer);
+      phaseIdx = (phaseIdx + 1) % BREATHING_PHASES.length;
+      runPhase();
+    }, p.duration);
+  }
+  runPhase();
+}
+
+function closeBreathing() {
+  showBreathing.value = false;
+  clearTimeout(breathingTimer);
+}
+
+// 本周目标
+async function handleRecordGoal() {
+  try {
+    const { data } = await recordWeeklyGoal(username.value);
+    weeklyGoal.value = data;
+    flash('目标记录成功！', 'success');
+  } catch { flash('记录失败', 'error'); }
+}
+
+// 记忆管理
+async function handleDeleteMemory(id) {
+  try {
+    await deleteMemory(id, username.value);
+    memories.value = memories.value.filter(m => m.id !== id);
+    flash('记忆已删除', 'success');
+  } catch { flash('删除失败', 'error'); }
+}
+
+// WebSocket
+let ws = null;
+function connectWebSocket() {
+  if (ws) ws.close();
+  try {
+    const wsUrl = `${(location.protocol === 'https:' ? 'wss:' : 'ws:')}//${location.host}/api/ws/notifications?username=${username.value}`;
+    ws = new WebSocket(wsUrl);
+    ws.onmessage = (event) => {
+      try {
+        const notification = JSON.parse(event.data);
+        showPushNotification(notification);
+      } catch {}
+    };
+    ws.onerror = () => { ws = null; };
+  } catch { ws = null; }
+}
+
+function showPushNotification(notification) {
+  flash(`${notification.title}: ${notification.body}`, 'info');
+}
+
+const currentTitle = ref('');
+const weather = ref({});
+const highRiskWarning = ref('');
+
 watch(messages, () => { persistMessages(); bottom(); }, { deep: true });
-watch(username, () => { loadSessions(); loadMood(); });
+watch(username, () => { loadSessions(); loadMood(); loadStreak(); loadWeeklyGoal(); loadMemories(); });
 watch(themePreference, v => localStorage.setItem(THEME, v));
 watch(sessionId, v => localStorage.setItem(LAST, v));
 
@@ -424,10 +762,17 @@ onMounted(async () => {
   const local = hydrateLocal();
   messages.value = local || [welcome()];
   resizeTextarea();
-  await loadSessions(); await loadMood();
+  await Promise.all([loadSessions(), loadMood(), loadStreak(), loadWeeklyGoal(), loadMemories(), loadCrisisResources()]);
   const current = sessions.value.find(s => String(s.sessionId) === sessionId.value);
   if (current) await openSession(current);
   bottom();
+  connectWebSocket();
 });
-onBeforeUnmount(() => currentEventSource.value?.close());
+onBeforeUnmount(() => {
+  currentEventSource.value?.close();
+  ws?.close();
+  clearTimeout(flash.t);
+  clearInterval(quoteInterval);
+  clearTimeout(breathingTimer);
+});
 </script>

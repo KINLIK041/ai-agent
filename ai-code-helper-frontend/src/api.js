@@ -34,12 +34,30 @@ export function createChatStreamUrl(memoryId, message) {
   return url.toString();
 }
 
+// ========== 会话相关 ==========
+export const saveSession = (payload) => apiClient.post('/ai/session/save', payload);
+export const getSessionList = (username) => apiClient.get('/ai/session/list', { params: { username } });
+export const getSessionDetail = (sessionId) => apiClient.get(`/ai/session/detail/${sessionId}`);
+export const deleteSession = (sessionId) => apiClient.get(`/ai/session/delete/${sessionId}`);
+
+// ========== 聊天 & 陪伴 ==========
 export const sendCompanionMessage = (payload) => apiClient.post('/ai/companion/chat', payload);
 export const saveMood = (payload) => apiClient.post('/ai/companion/mood', payload);
 export const fetchCareMessage = (username, context) => apiClient.get('/ai/companion/care', { params: { username, context }, responseType: 'text' });
 export const fetchNightlyCheckIn = (username) => apiClient.get('/ai/companion/check-in', { params: { username } });
 export const fetchMoodOverview = (username, days = 90) => apiClient.get('/ai/companion/mood/overview', { params: { username, days } });
-export const saveSession = (payload) => apiClient.post('/ai/session/save', payload);
-export const getSessionList = (username) => apiClient.get('/ai/session/list', { params: { username } });
-export const getSessionDetail = (sessionId) => apiClient.get(`/ai/session/detail/${sessionId}`);
-export const deleteSession = (sessionId) => apiClient.get(`/ai/session/delete/${sessionId}`);
+
+// ========== 打卡 & 成就系统 (新) ==========
+export const fetchMoodStreak = (username) => apiClient.get('/ai/companion/mood/streak', { params: { username } });
+export const recordMoodCheckIn = (payload) => apiClient.post('/ai/companion/mood/check-in', payload);
+
+// ========== 本周目标 (新) ==========
+export const fetchWeeklyGoal = (username) => apiClient.get('/ai/companion/goal/current', { params: { username } });
+export const recordWeeklyGoal = (username) => apiClient.post('/ai/companion/goal/record', { params: { username } });
+
+// ========== AI 记忆管理 (新) ==========
+export const fetchMemories = (username) => apiClient.get('/ai/memory/list', { params: { username } });
+export const deleteMemory = (id, username) => apiClient.delete(`/ai/memory/${id}`, { params: { username } });
+
+// ========== 危机热线 (新) ==========
+export const fetchCrisisResources = () => apiClient.get('/ai/companion/crisis-resources');
