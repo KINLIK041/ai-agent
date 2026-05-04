@@ -258,14 +258,15 @@
             <span>用户名</span>
             <input v-model="username" class="setting-input" maxlength="20" />
           </div>
-          <div class="setting-row">
-            <span>主题</span>
-            <select v-model="themePreference" class="setting-select">
-              <option value="auto">自动</option>
-              <option value="light">浅色</option>
-              <option value="dark">深色</option>
-            </select>
-          </div>
+          <!-- iOS 风格主题切换按钮 -->
+          <button class="theme-toggle-btn" @click="cycleTheme">
+            <span>🌓 主题</span>
+            <span style="display:flex;align-items:center;gap:6px;">
+              <span v-html="themeToggleIcon"></span>
+              <span style="font-size:15px;color:var(--accent);font-weight:500;">{{ themeToggleLabel }}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </span>
+          </button>
           <div class="setting-row">
             <span>Chat ID</span>
             <strong class="setting-value">#{{ sessionId }}</strong>
@@ -504,6 +505,27 @@ function goalTypeName(type) {
   const map = { GRATITUDE: '🙏 感恩记录', MINDFULNESS: '🧘 正念练习', EXERCISE: '🏃 运动打卡', SOCIAL: '🤝 社交互动', CONSISTENCY: '📝 连续记录' };
   return map[type] || type;
 }
+
+// 主题切换函数 - 循环: auto → light → dark → auto
+function cycleTheme() {
+  const order = ['auto', 'light', 'dark'];
+  const idx = order.indexOf(themePreference.value);
+  themePreference.value = order[(idx + 1) % order.length];
+}
+
+const themeToggleIcon = computed(() => {
+  if (themePreference.value === 'light') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  }
+  if (themePreference.value === 'dark') {
+    return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+});
+
+const themeToggleLabel = computed(() => {
+  return { auto: '自动', light: '浅色', dark: '深色' }[themePreference.value] || '自动';
+});
 function push(payload) { messages.value.push({ id: crypto.randomUUID(), timestamp: Date.now(), ...payload }); }
 function closePanels() { sidebarOpen.value = false; moodOpen.value = false; }
 
